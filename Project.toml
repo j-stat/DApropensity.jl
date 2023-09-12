@@ -1,3 +1,4 @@
 [deps]
+DeferredAcceptance = "7ba42312-65e6-11eb-2a40-f37f14131e13"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 StatsKit = "2cb19f9e-ec4d-5c53-8573-a4542a68d3f0"

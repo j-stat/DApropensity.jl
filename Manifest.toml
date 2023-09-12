@@ -2,7 +2,7 @@
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "acfdc124a7fc8cad826be0c503a03d633ec357ab"
+project_hash = "23e99735ba7968d05d9f6c5169e7b8cdbb3f0d62"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -236,6 +236,12 @@ version = "1.0.0"
 [[deps.Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+
+[[deps.DeferredAcceptance]]
+deps = ["Combinatorics", "Random", "StatsBase"]
+git-tree-sha1 = "b626af20a8df581f351c359a832d21edecd90d63"
+uuid = "7ba42312-65e6-11eb-2a40-f37f14131e13"
+version = "0.6.1"
 
 [[deps.DelimitedFiles]]
 deps = ["Mmap"]
