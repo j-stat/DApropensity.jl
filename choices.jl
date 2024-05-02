@@ -2,6 +2,10 @@ using Distributions
 using Random
 using DeferredAcceptance
 
+function simulate(numTimes, schools)
+    schools_tiebroken = singletiebreaking(schools)
+end
+
 function choices(numStudents, numSchools, totalSchools, numRankings)
     for i = 1:numStudents
         schoolRank = schools(numSchools, totalSchools)
