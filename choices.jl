@@ -3,23 +3,31 @@ using Random
 using DeferredAcceptance
 
 function simulate(numTimes, schools, students, capacities)
-    schools_tiebroken = singletiebreaking(schools)
-    assn, rank = deferredacceptance(students, schools_tiebroken, capacities)
-    println(assn)
+    assnMat = Array{Int}(undef, numTimes, size(schools)[1])
+    for i in 1:numTimes
+        schools_tiebroken = STB(schools) # basically the lotto numbers
+        students_tiebroken = STB(students) # just to break the 999 rankings
+        assn, _ = DA(students_tiebroken, schools_tiebroken, capacities; verbose=true)
+        @assert isstable(students, schools, capacities, assn)
+        assnMat[i,:] = assn
+    end
+    return(assnMat)
 end
 
 function choices(numStudents, numSchools, totalSchools, numRankings, maxRank=999)
-    students = Array{Int}(undef, numStudents, totalSchools)
+    students = Array{Int}(undef, totalSchools, numStudents)
     for i = 1:numStudents
         student = studentRanking(numSchools, totalSchools, maxRank)
-        students[i,:] = student
+        students[:,i] = student
     end
 
-    schools = Array{Int}(undef, totalSchools, numStudents)
+    schools = Array{Int}(undef, numStudents, totalSchools)
     for i = 1:totalSchools
-        priority = priorityRanking(students[:,i], numRankings, maxRank)
-        schools[i,:] = priority
+        priority = priorityRanking(students[i,:], numRankings, maxRank)
+        schools[:,i] = priority
     end
+
+    return(students, schools)
 end
 
 # student chooses m schools out of possible M
@@ -38,4 +46,9 @@ function priorityRanking(ranks, numRankings, maxRank)
     replace(x -> x .!= maxRank ? rand(DiscreteUniform(1, numRankings)) : x, ranks)
 end
 
-choices(10, 3, 5, 8)
+numStudents=15
+numSchools=3
+totalSchools=5
+numRankings=8
+students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
+assnMat = simulate(15, schools, students, rand((2,4),totalSchools))
