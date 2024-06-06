@@ -1,3 +1,8 @@
+name = "DAPropensity"
+uuid = "beda79c3-a0c9-41a9-bc1d-f80b9c2efe66"
+authors = ["August Guang <august.guang@gmail.com>"]
+version = "0.1.0"
+
 [deps]
 DeferredAcceptance = "7ba42312-65e6-11eb-2a40-f37f14131e13"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
