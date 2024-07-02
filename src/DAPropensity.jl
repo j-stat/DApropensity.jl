@@ -1,3 +1,5 @@
+module DAPropensity
+
 using Distributions
 using Random
 using DeferredAcceptance
@@ -51,4 +53,6 @@ numSchools=3
 totalSchools=5
 numRankings=8
 students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(15, schools, students, rand((2,4),totalSchools))
+assnMat = simulate(15, schools, students, rand((1,3),totalSchools))
+
+end
