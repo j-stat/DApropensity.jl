@@ -1,4 +1,4 @@
-using DA-in-Julia
+using DAPropensity
 using Test
 
 @testset "Example tests" begin

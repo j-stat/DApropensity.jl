@@ -1,5 +1,7 @@
 # August
 
+## June 29th, 2024
+
 ## June 6th, 2024
 
  * Changed repo name to DAPropensity.jl
