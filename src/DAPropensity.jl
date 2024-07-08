@@ -4,7 +4,7 @@ using Distributions
 using Random
 using DeferredAcceptance
 
-function simulate(numTimes, schools, students, capacities)
+function simulate(numTimes, students, schools, capacities)
     assnMat = Array{Int}(undef, numTimes, size(schools)[1])
     for i in 1:numTimes
         schools_tiebroken = STB(schools) # basically the lotto numbers
@@ -47,12 +47,5 @@ end
 function priorityRanking(ranks, numRankings, maxRank)
     replace(x -> x .!= maxRank ? rand(DiscreteUniform(1, numRankings)) : x, ranks)
 end
-
-numStudents=15
-numSchools=3
-totalSchools=5
-numRankings=8
-students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(15, schools, students, rand((1,3),totalSchools))
 
 end
