@@ -5,11 +5,22 @@ using Random
 using DeferredAcceptance
 using DataFrames
 
-function simulate(numTimes, schools, students, capacities)
+"""
+    simulate(numTimes, students, schools, capacities)
+
+Simulates the DA mechanism with lottery `numTimes` given a student preference matrix,
+school priority matrix, and school capacity list.
+
+# Examples
+```julia-repl
+julia> assnMat = DAPropensity.simulate(2, [[1,2] [2,1] [1,999]], [[1,2,3] [1,2,2]], [1,2])
+```
+"""
+function simulate(numTimes, students, schools, capacities)
     assnMat = Array{Int}(undef, numTimes, size(schools)[1])
-    for i in 1:numTimes
-        schools_tiebroken = singletiebreaking(schools)
-        students_tiebroken = singletiebreaking(students)
+    Threads.@threads :static for i in 1:numTimes
+        schools_tiebroken = DeferredAcceptance.singletiebreaking(schools)
+        students_tiebroken = DeferredAcceptance.singletiebreaking(students)
         assn, _ = deferredacceptance(students_tiebroken, schools_tiebroken, capacities; verbose=true)
         #schools_tiebroken = STB(schools) # basically the lotto numbers
         #students_tiebroken = STB(students) # just to break the 999 rankings
@@ -22,13 +33,13 @@ end
 
 function choices(numStudents, numSchools, totalSchools, numRankings, maxRank=999)
     students = Array{Int}(undef, totalSchools, numStudents)
-    for i = 1:numStudents
+    Threads.@threads :static for i = 1:numStudents
         student = studentRanking(numSchools, totalSchools, maxRank)
         students[:,i] = student
     end
 
     schools = Array{Int}(undef, numStudents, totalSchools)
-    for i = 1:totalSchools
+    Threads.@threads :dynamic for i = 1:totalSchools
         priority = priorityRanking(students[i,:], numRankings, maxRank)
         schools[:,i] = priority
     end
@@ -58,7 +69,7 @@ end
 function computePS(numRuns, assignments)
     ps = []
     df = DataFrame(assignments, :auto)
-    for i in 1:ncol(df)
+    Threads.@threads :static for i in 1:ncol(df)
         counts = combine(groupby(df, i), nrow)
         counts[!, 2] = counts[:,2]/numRuns
         person="person"*string(i)
@@ -76,7 +87,7 @@ function aggregatePS(schoolDemo, ps_list)
     # Need to update this to accept and act on variable names as input but 
     # right now instruct user to have variables called schoolID and school_type in their school demo file 
     ps_types = []
-    for i in 1:length(ps_list)
+    Threads.@threads :static for i in 1:length(ps_list)
         person="person"*string(i)
         df=leftjoin(ps_list[i], schoolDemo, on = :school => :schoolID)
         df=combine(groupby(df, :school_type), :ps => sum)
@@ -94,7 +105,8 @@ numRankings=8
 num_runs=15
 demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
 students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
+assnMat = simulate(num_runs, students, schools, rand((1,3),totalSchools))
 ps = computePS(num_runs, assnMat)
 ps_type = aggregatePS(demos, ps)
+
 end
