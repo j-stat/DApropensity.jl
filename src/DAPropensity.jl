@@ -3,13 +3,17 @@ module DAPropensity
 using Distributions
 using Random
 using DeferredAcceptance
+using DataFrames
 
 function simulate(numTimes, schools, students, capacities)
     assnMat = Array{Int}(undef, numTimes, size(schools)[1])
     for i in 1:numTimes
-        schools_tiebroken = STB(schools) # basically the lotto numbers
-        students_tiebroken = STB(students) # just to break the 999 rankings
-        assn, _ = DA(students_tiebroken, schools_tiebroken, capacities; verbose=true)
+        schools_tiebroken = singletiebreaking(schools)
+        students_tiebroken = singletiebreaking(students)
+        assn, _ = deferredacceptance(students_tiebroken, schools_tiebroken, capacities; verbose=true)
+        #schools_tiebroken = STB(schools) # basically the lotto numbers
+        #students_tiebroken = STB(students) # just to break the 999 rankings
+        #assn, _ = DA(students_tiebroken, schools_tiebroken, capacities; verbose=true)
         @assert isstable(students, schools, capacities, assn)
         assnMat[i,:] = assn
     end
@@ -48,11 +52,29 @@ function priorityRanking(ranks, numRankings, maxRank)
     replace(x -> x .!= maxRank ? rand(DiscreteUniform(1, numRankings)) : x, ranks)
 end
 
+# DA Propensity score calculation 
+# AssnMat returns a row with school assignment for each of n students
+# uses DataFrames
+function computePS(numRuns, assignments)
+    ps = []
+    df = DataFrame(assignments, :auto)
+    for i in 1:ncol(df)
+        counts = combine(groupby(df, i), nrow)
+        counts[!, 2] = counts[:,2]/numRuns
+        name="schools_person" * string(i) 
+        rename!(counts, 1 => name)
+        rename!(counts,:nrow => :ps)
+        push!(ps, counts)
+    end
+    return(ps)
+end
+
 numStudents=15
 numSchools=3
 totalSchools=5
 numRankings=8
+num_runs=15
 students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(15, schools, students, rand((1,3),totalSchools))
-
+assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
+ps = computePS(num_runs, assnMat)
 end
