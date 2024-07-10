@@ -5,7 +5,7 @@ using Random
 using DeferredAcceptance
 using DataFrames
 
-function simulate(numTimes, schools, students, capacities)
+function simulate(numTimes, students, schools, capacities)
     assnMat = Array{Int}(undef, numTimes, size(schools)[1])
     for i in 1:numTimes
         schools_tiebroken = singletiebreaking(schools)
@@ -69,12 +69,4 @@ function computePS(numRuns, assignments)
     return(ps)
 end
 
-numStudents=15
-numSchools=3
-totalSchools=5
-numRankings=8
-num_runs=15
-students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
-ps = computePS(num_runs, assnMat)
 end
