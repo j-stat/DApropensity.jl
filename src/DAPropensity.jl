@@ -5,7 +5,7 @@ using Random
 using DeferredAcceptance
 using DataFrames
 
-function simulate(numTimes, students, schools, capacities)
+function simulate(numTimes, schools, students, capacities)
     assnMat = Array{Int}(undef, numTimes, size(schools)[1])
     for i in 1:numTimes
         schools_tiebroken = singletiebreaking(schools)
@@ -61,12 +61,40 @@ function computePS(numRuns, assignments)
     for i in 1:ncol(df)
         counts = combine(groupby(df, i), nrow)
         counts[!, 2] = counts[:,2]/numRuns
-        name="schools_person" * string(i) 
+        person="person"*string(i)
+        name="school"
         rename!(counts, 1 => name)
         rename!(counts,:nrow => :ps)
+        counts[:, "person"] .= person
+        select!(counts, :person, Not([:person, :ps]), :ps)
         push!(ps, counts)
     end
     return(ps)
 end
 
+function aggregatePS(schoolDemo, ps_list)
+    # Need to update this to accept and act on variable names as input but 
+    # right now instruct user to have variables called schoolID and school_type in their school demo file 
+    ps_types = []
+    for i in 1:length(ps_list)
+        person="person"*string(i)
+        df=leftjoin(ps_list[i], schoolDemo, on = :school => :schoolID)
+        df=combine(groupby(df, :school_type), :ps => sum)
+        df[:, "person"] .= person
+        select!(df, :person, Not([:person, :ps_sum]), :ps_sum)
+        push!(ps_types, df)
+    end
+    return(ps_types)
+end
+
+numStudents=15
+numSchools=3
+totalSchools=5
+numRankings=8
+num_runs=15
+demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
+students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
+assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
+ps = computePS(num_runs, assnMat)
+ps_type = aggregatePS(demos, ps)
 end
