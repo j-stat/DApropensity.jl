@@ -1,4 +1,13 @@
+name = "DAPropensity"
+uuid = "beda79c3-a0c9-41a9-bc1d-f80b9c2efe66"
+authors = ["August Guang <august.guang@gmail.com>"]
+version = "0.1.0"
+
 [deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DeferredAcceptance = "7ba42312-65e6-11eb-2a40-f37f14131e13"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StatsKit = "2cb19f9e-ec4d-5c53-8573-a4542a68d3f0"
