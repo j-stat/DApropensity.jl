@@ -25,6 +25,7 @@ num_runs=500
 demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
 ```
 
+```
 6×2 DataFrame
  Row │ schoolID  school_type 
      │ Int64     String      
@@ -35,17 +36,21 @@ demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2"
    4 │        4  type1
    5 │        5  type2
    6 │        6  type1
+```
 
 ```{julia}
 students, schools = DAPropensity.choices(numStudents, numSchools, totalSchools, numRankings)
 ```
 
+```
 ([999 1 … 2 1; 999 999 … 1 999; … ; 3 2 … 999 999; 2 999 … 999 3], [999 999 … 4 7; 4 999 … 4 999; … ; 1 4 … 999 999; 3 999 … 999 8])
+```
 
 ```{julia}
 @benchmark assnMat = DAPropensity.simulate($num_runs, $students, $schools, $rand((1,3),$totalSchools))
 ```
 
+```
 BenchmarkTools.Trial: 727 samples with 1 evaluation.
  Range (min … max):  2.390 ms … 78.149 ms  ┊ GC (min … max):  0.00% … 96.42%
  Time  (median):     2.937 ms              ┊ GC (median):     0.00%
@@ -56,11 +61,13 @@ BenchmarkTools.Trial: 727 samples with 1 evaluation.
   2.39 ms      Histogram: log(frequency) by time     33.4 ms <
 
  Memory estimate: 40.56 MiB, allocs estimate: 525044.
+```
 
  ```{julia}
  @benchmark assnMat = DAPropensity.simulate(100000, $students, $schools, $rand((1,3),$totalSchools))
  ```
 
+```
  BenchmarkTools.Trial: 4 samples with 1 evaluation.
  Range (min … max):  1.249 s …   1.400 s  ┊ GC (min … max): 58.10% … 58.39%
  Time  (median):     1.283 s              ┊ GC (median):    57.98%
@@ -71,6 +78,7 @@ BenchmarkTools.Trial: 727 samples with 1 evaluation.
   1.25 s         Histogram: frequency by time         1.4 s <
 
  Memory estimate: 8.58 GiB, allocs estimate: 110700044.
+```
 
  ## More realistic benchmark
 
@@ -85,6 +93,7 @@ students, schools = DAPropensity.choices(numStudents, numSchools, totalSchools, 
 @benchmark assnMat = DAPropensity.simulate(10, $students, $schools, $rand((50,500),$totalSchools))
  ```
 
+```
 BenchmarkTools.Trial: 3 samples with 1 evaluation.
  Range (min … max):  1.887 s …  1.897 s  ┊ GC (min … max): 39.03% … 39.00%
  Time  (median):     1.896 s             ┊ GC (median):    39.02%
@@ -95,3 +104,4 @@ BenchmarkTools.Trial: 3 samples with 1 evaluation.
   1.89 s        Histogram: frequency by time         1.9 s <
 
  Memory estimate: 12.53 GiB, allocs estimate: 7330070.
+```
