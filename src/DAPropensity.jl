@@ -16,12 +16,12 @@ school priority matrix, and school capacity list.
 julia> assnMat = DAPropensity.simulate(2, [[1,2] [2,1] [1,999]], [[1,2,3] [1,2,2]], [1,2])
 ```
 """
-function simulate(numTimes, students, schools, capacities)
+function simulate(numTimes, students, schools, capacities, verbose=false)
     assnMat = Array{Int}(undef, numTimes, size(schools)[1])
     Threads.@threads :static for i in 1:numTimes
         schools_tiebroken = DeferredAcceptance.singletiebreaking(schools)
         students_tiebroken = DeferredAcceptance.singletiebreaking(students)
-        assn, _ = deferredacceptance(students_tiebroken, schools_tiebroken, capacities; verbose=true)
+        assn, _ = deferredacceptance(students_tiebroken, schools_tiebroken, capacities, verbose=verbose)
         #schools_tiebroken = STB(schools) # basically the lotto numbers
         #students_tiebroken = STB(students) # just to break the 999 rankings
         #assn, _ = DA(students_tiebroken, schools_tiebroken, capacities; verbose=true)
@@ -101,7 +101,7 @@ end
 numStudents=15
 numSchools=3
 totalSchools=5
-numRankings=8
+numRankings=
 num_runs=15
 demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
 students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
