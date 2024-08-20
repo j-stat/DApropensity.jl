@@ -36,7 +36,7 @@ end
 end 
 
 @testset "test computeps" begin 
-    # length of ps object should equal dimension of assnMat, no ps score should be greater than 1 
+    # length of ps object should equal dimension of assnMat, ps scores should be in [0,1]
     numStudents=15
     numSchools=3
     totalSchools=5
@@ -55,5 +55,6 @@ end
     end 
     check = reduce(vcat, check)
     @test length(ps)==dim(assnMat)
-    @test maximum(check)==1
+    @test minimum(check)>=0
+    @test maximum(check)<=1
 end 
