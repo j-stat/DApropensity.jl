@@ -33,4 +33,27 @@ end
     # 15 students, 5 schools each choosing, 6 total schools, 8 rankings
     students, schools = DAPropensity.choices(15,5,6,8)
     @test size(DAPropensity.simulate(5,students,schools,[3,3,3,2,2,2]))==(5,15) # 5 runs, 15 students
-end
+end 
+
+@testset "test computeps" begin 
+    # length of ps object should equal dimension of assnMat, no ps score should be greater than 1 
+    numStudents=15
+    numSchools=3
+    totalSchools=5
+    numRankings=8
+    num_runs=15
+    lotteryExample = DataFrame(CSV.File("./example_data/lottery_example_complete.csv"))
+    testStudents = preStudents(lotteryExample)
+    testSchools = preSchools(lotteryExample)
+    demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
+    students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
+    assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
+    ps = computePS(assnMat)
+    check = []
+    for i in 1:length(ps)
+        push!(check, ps[i][:,3])
+    end 
+    check = reduce(vcat, check)
+    @test length(ps)==dim(assnMat)
+    @test maximum(check)==1
+end 

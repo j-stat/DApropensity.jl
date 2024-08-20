@@ -56,7 +56,8 @@ end
 # DA Propensity score calculation 
 # AssnMat returns a row with school assignment for each of n students
 # uses DataFrames
-function computePS(numRuns, assignments)
+function computePS(assignments)
+    numRuns = dim(assignments)
     ps = []
     df = DataFrame(assignments, :auto)
     for i in 1:ncol(df)
@@ -117,6 +118,7 @@ function preSchools(lotteryMat)
     return(df)
 end
 
+# Inputs 
 numStudents=15
 numSchools=3
 totalSchools=5
@@ -130,6 +132,6 @@ testSchools = preSchools(lotteryExample)
 demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
 students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
 assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
-ps = computePS(num_runs, assnMat)
+ps = computePS(assnMat)
 ps_type = aggregatePS(demos, ps)
 end
