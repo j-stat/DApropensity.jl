@@ -4,6 +4,7 @@ using Distributions
 using Random
 using DeferredAcceptance
 using DataFrames
+using CSV
 
 """
     simulate(numTimes, students, schools, capacities)
@@ -66,7 +67,8 @@ end
 # DA Propensity score calculation 
 # AssnMat returns a row with school assignment for each of n students
 # uses DataFrames
-function computePS(numRuns, assignments)
+function computePS(assignments)
+    numRuns = dim(assignments)
     ps = []
     df = DataFrame(assignments, :auto)
     Threads.@threads :static for i in 1:ncol(df)
@@ -96,17 +98,52 @@ function aggregatePS(schoolDemo, ps_list)
         push!(ps_types, df)
     end
     return(ps_types)
+end 
+
+function preStudents(lotteryMat)
+    # End results is a school x student matrix where each row is a school, 
+    # each column is a student and the entries are the students preference over schools
+    idx=ncol(lotteryMat)
+    for c ∈ eachcol(lotteryMat)
+        replace!(c, NaN => 999)
+        replace!(c, missing => 999)
+    end
+    df=lotteryMat[:,[1:2:idx;]]
+    df=permutedims(df)
+    df=Matrix(df)
+    return(df)
+end 
+
+function preSchools(lotteryMat)
+    # End result is a student x school matrix where each row is a student, 
+    # each column is a school, and each entry/cell is a school's preference over a student
+    idx=ncol(lotteryMat)
+    for c ∈ eachcol(lotteryMat)
+        replace!(c, NaN => 999)
+        replace!(c, missing => 999)
+    end
+    #schools=lotteryMat[:,[1:2:idx;]]
+    prefs=lotteryMat[:,[2:2:idx;]]
+    df=permutedims(prefs)
+    df=Matrix(df)
+    return(df)
 end
 
+# Inputs 
 numStudents=15
 numSchools=3
 totalSchools=5
 numRankings=
 num_runs=15
+lotteryExample = DataFrame(CSV.File("./example_data/lottery_example_complete.csv"))
+lotteryExample2 = DataFrame(CSV.File("./example_data/lottery_example_missing.csv"))
+# Test preprocessing functions on lottery example data 
+testStudents = preStudents(lotteryExample)
+testSchools = preSchools(lotteryExample)
 demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
 students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(num_runs, students, schools, rand((1,3),totalSchools))
-ps = computePS(num_runs, assnMat)
+assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
+ps = computePS(assnMat)
 ps_type = aggregatePS(demos, ps)
 
 end
