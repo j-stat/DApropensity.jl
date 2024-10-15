@@ -133,7 +133,7 @@ end
 numStudents=15
 numSchools=3
 totalSchools=5
-numRankings=
+numRankings=8
 num_runs=15
 lotteryExample = DataFrame(CSV.File("./example_data/lottery_example_complete.csv"))
 lotteryExample2 = DataFrame(CSV.File("./example_data/lottery_example_missing.csv"))
@@ -142,7 +142,7 @@ testStudents = preStudents(lotteryExample)
 testSchools = preSchools(lotteryExample)
 demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
 students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(num_runs, schools, students, rand((1,3),totalSchools))
+assnMat = simulate(num_runs, students, schools, rand((1,3),totalSchools))
 ps = computePS(assnMat)
 ps_type = aggregatePS(demos, ps)
 
