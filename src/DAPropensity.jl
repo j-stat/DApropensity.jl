@@ -98,15 +98,4 @@ function aggregatePS(schoolDemo, ps_list)
     return(ps_types)
 end
 
-numStudents=15
-numSchools=3
-totalSchools=5
-numRankings=
-num_runs=15
-demos = DataFrame(schoolID=[1,2,3,4,5,6], school_type=["type1", "type1", "type2", "type1", "type2", "type1"])
-students, schools = choices(numStudents, numSchools, totalSchools, numRankings)
-assnMat = simulate(num_runs, students, schools, rand((1,3),totalSchools))
-ps = computePS(num_runs, assnMat)
-ps_type = aggregatePS(demos, ps)
-
 end
